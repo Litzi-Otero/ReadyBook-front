@@ -1,0 +1,100 @@
+/* Sidebar con posición en el lado derecho */
+.sidebar {
+  width: 190px;
+  height: calc(100vh - 60px);
+  background: #242628;
+  color: white;
+  padding: 20px;
+  position: fixed;
+  right: 0; /* Cambié left: 0 por right: 0 para mover la sidebar al lado derecho */
+  top: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: width 0.3s;
+}
+
+.sidebar.closed {
+  width: 40px;
+  align-items: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.3s;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.sidebar ul li a.active {
+  background-color: var(--green-color);
+  color: white;
+}
+
+.sidebar ul li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon {
+  font-size: 20px;
+}
+
+/* Botón para ocultar/mostrar */
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  left: -15px; /* Ajustado para que el botón esté a la izquierda cuando la sidebar está en el lado derecho */
+  background: #333;
+  border-radius: 60%;
+  padding: 5px;
+  transition: 0.3s;
+}
+
+.toggle-btn:hover {
+  background: var(--green-color);
+}
+
+.logout-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 15px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.logout-btn:hover {
+  background-color: #c9302c;
+}
+
+.red-icon {
+  color: white;
+}

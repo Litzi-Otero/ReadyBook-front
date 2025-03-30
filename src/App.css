@@ -1,0 +1,27 @@
+/* App */
+.app-container {
+  display: flex;
+  flex-direction: row; /* Para que el sidebar y contenido estén en fila */
+}
+
+.content {
+  margin-left: 200px; /* Espacio para el sidebar */
+  flex-grow: 1; /* El contenido debe ocupar el espacio restante */
+  padding: 20px;
+  overflow: auto; /* Permitir que el contenido se desplace si es necesario */
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #222;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  z-index: 999;
+}

@@ -1,0 +1,127 @@
+.manage-notifications-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.search-containerN {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.search-containerN input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-iconN {
+  margin-left: -90px;
+  color: gray;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification-item {
+  background: white;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-item.read {
+  background: #f1f1f1;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mark-read-btn {
+  background-color: var(--green-color);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: var(--red-color);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.no-notifications {
+  color: gray;
+  font-style: italic;
+}
+
+.notifications-container {
+  padding: 20px;
+}
+
+.notifications-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+  gap: 20px;
+}
+
+.notification-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-icon {
+  font-size: 24px;
+  color: var(--blue-color);
+}
+
+/* Estilos añadidos para las nuevas funcionalidades */
+.notification-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.notification-card small {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+  font-size: 12px;
+}
+
+.time-left {
+  margin-top: 5px;
+  font-size: 14px;
+  color: var(--red-color); /* Usamos tu variable para tiempo restante */
+}
+
+.time-left.available {
+  color: var(--green-color); /* Usamos tu variable para disponibilidad */
+  font-weight: bold;
+}
+
+.error-message {
+  color: var(--red-color); /* Usamos tu variable para errores */
+  font-size: 16px;
+}

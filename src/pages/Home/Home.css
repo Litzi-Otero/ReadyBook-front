@@ -1,0 +1,73 @@
+.home-container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+header {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  color: #343a40;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: #6c757d;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.feature {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  width: 30%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature h2 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  color: #6c757d;
+}
+
+.auth-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-login{
+    background-color: #A1459D;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.btn-register {
+  background-color: #52C2C3;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.btn-login:hover, .btn-register:hover {
+  background-color: #cacfd2;
+}
