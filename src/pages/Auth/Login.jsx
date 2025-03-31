@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { loginUser, verifyMFA, requestPasswordReset, resetPassword } from "../../services/authService";
+import { FaQrcode } from "react-icons/fa"; // Ícono de código QR
 import "./Login.css";
 import logo from "../../assets/logo.png";
 
@@ -13,6 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showQRInfo, setShowQRInfo] = useState(false); // Estado para mostrar info del QR
 
   // Esquemas de validación
   const loginSchema = Yup.object({
@@ -77,7 +79,6 @@ const Login = () => {
       setStep(2);
       setError(""); // Limpiar errores previos
     } catch (err) {
-      // Mostrar mensaje específico si el correo no existe
       if (err.message === "Usuario no encontrado") {
         setError("El correo no está registrado.");
       } else {
@@ -99,7 +100,6 @@ const Login = () => {
       setEmail("");
       alert("Contraseña restablecida con éxito. Por favor, inicia sesión.");
     } catch (err) {
-      // Manejar errores específicos del backend
       if (err.message === "Código incorrecto") {
         setError("El código ingresado es incorrecto.");
       } else if (err.message === "Código expirado") {
@@ -110,6 +110,11 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Función para manejar el clic en el ícono de QR
+  const handleQRClick = () => {
+    setShowQRInfo(true);
   };
 
   return (
@@ -307,6 +312,30 @@ const Login = () => {
           </Formik>
         )}
 
+        {/* Ícono de Código QR */}
+        <div className="qr-icon-wrapper">
+          <button
+            className="qr-icon-btn"
+            onClick={handleQRClick}
+            title="Recuperar código MFA con QR"
+          >
+            <FaQrcode />
+          </button>
+        </div>
+
+        {/* Mensaje explicativo (modal o texto simple) */}
+        {showQRInfo && (
+          <div className="qr-info">
+            <p>
+              Escanea el código QR con tu app de autenticación para recuperar tu código MFA. 
+              (Funcionalidad en desarrollo: contacta al soporte para obtener tu código QR.)
+            </p>
+            <button onClick={() => setShowQRInfo(false)} className="close-qr-info">
+              Cerrar
+            </button>
+          </div>
+        )}
+
         {(mode === "login" || mode === "reset-request") && (
           <p className="register-link">
             ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
@@ -316,5 +345,5 @@ const Login = () => {
     </div>
   );
 };
-
+ 
 export default Login;

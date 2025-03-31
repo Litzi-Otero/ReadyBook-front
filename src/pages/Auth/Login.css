@@ -11,6 +11,7 @@
   padding: 30px;
   width: 100%;
   max-width: 400px;
+  position: relative; /* Para posicionar el ícono QR */
 }
 
 .logo {
@@ -129,3 +130,51 @@
   color: var(--text-small-color);
 }
 
+/* Estilo para el ícono de QR */
+.qr-icon-wrapper {
+  position: absolute;
+  bottom: 0; /* Pegado al borde inferior */
+  right: 0; /* Pegado al borde derecho */
+}
+
+.qr-icon-btn {
+  background-color: var(--text-small-color); /* Fondo de color */
+  border: none;
+  padding: 10px; /* Espaciado interno para que el fondo sea visible */
+  font-size: 22px;
+  color: #ffffff; /* Ícono blanco */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 30px ; /* Redondear solo las esquinas superiores e izquierda */
+}
+
+.qr-icon-btn:hover {
+  background-color: var(--blue-color); /* Fondo más oscuro al pasar el mouse */
+}
+
+/* Estilo para el mensaje explicativo */
+.qr-info {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 15px;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.close-qr-info {
+  background-color: #A1459D;
+  color: #ffffff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.close-qr-info:hover {
+  background-color: #cacfd2;
+}
