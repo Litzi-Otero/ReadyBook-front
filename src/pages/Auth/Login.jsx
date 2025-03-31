@@ -1,22 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { loginUser, verifyMFA, requestPasswordReset, resetPassword } from "../../services/authService";
-import { FaQrcode } from "react-icons/fa"; // Ícono de código QR
+import { loginUser, verifyMFA, requestPasswordReset, resetPassword, requestMFAQRTempCode, generateMFAQR } from "../../services/authService";
 import "./Login.css";
 import logo from "../../assets/logo.png";
+import LoginForm from "../../components/Login/LoginForm";
+import MFAForm from "../../components/Login/MFAForm";
+import ResetRequestForm from "../../components/Login/ResetRequestForm";
+import ResetPasswordForm from "../../components/Login/ResetPasswordForm";
+import TempCodeModal from "../../components/Login/TempCodeModal";
+import QRCodeModal from "../../components/Login/QRCodeModal";
+import QRIcon from "../../components/Login/QRIcon";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login"); // "login", "reset-request"
-  const [step, setStep] = useState(1); // 1: Credenciales/Solicitud, 2: MFA/Verificación
+  const [mode, setMode] = useState("login");
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showQRInfo, setShowQRInfo] = useState(false); // Estado para mostrar info del QR
+  const [showQRInfo, setShowQRInfo] = useState(false);
+  const [qrCode, setQrCode] = useState(null);
+  const [showTempCodeForm, setShowTempCodeForm] = useState(false);
 
-  // Esquemas de validación
+  // Esquemas de validación (ya están definidos en los componentes, pero los dejamos aquí por referencia)
   const loginSchema = Yup.object({
     email: Yup.string().email("Correo inválido").required("Requerido"),
     password: Yup.string().required("Requerido"),
@@ -35,6 +42,12 @@ const Login = () => {
     newPassword: Yup.string().min(8, "Mínimo 8 caracteres").required("Requerido"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("newPassword"), null], "Las contraseñas deben coincidir")
+      .required("Requerido"),
+  });
+
+  const tempCodeSchema = Yup.object({
+    tempCode: Yup.string()
+      .matches(/^\d{6}$/, "Debe ser un código de 6 dígitos")
       .required("Requerido"),
   });
 
@@ -77,7 +90,7 @@ const Login = () => {
       const response = await requestPasswordReset(values.email);
       setEmail(values.email);
       setStep(2);
-      setError(""); // Limpiar errores previos
+      setError("");
     } catch (err) {
       if (err.message === "Usuario no encontrado") {
         setError("El correo no está registrado.");
@@ -113,8 +126,45 @@ const Login = () => {
   };
 
   // Función para manejar el clic en el ícono de QR
-  const handleQRClick = () => {
-    setShowQRInfo(true);
+  const handleQRClick = async () => {
+    try {
+      if (!email) {
+        setError("Por favor, ingresa tu correo antes de generar el código QR.");
+        return;
+      }
+      setIsLoading(true);
+      await requestMFAQRTempCode(email);
+      setShowTempCodeForm(true);
+      setError("");
+    } catch (err) {
+      setError(err.message || "Error al solicitar el código temporal.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTempCodeSubmit = async (values) => {
+    setIsLoading(true);
+    try {
+      const response = await generateMFAQR(email, values.tempCode);
+      if (response.qr) {
+        setQrCode(response.qr);
+        setShowTempCodeForm(false);
+        setShowQRInfo(true);
+      } else {
+        setError("Error al generar el código QR.");
+      }
+    } catch (err) {
+      if (err.message === "Código temporal incorrecto") {
+        setError("El código ingresado es incorrecto.");
+      } else if (err.message === "Código temporal expirado") {
+        setError("El código ha expirado. Solicita uno nuevo.");
+      } else {
+        setError(err.message || "Error al verificar el código temporal.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -130,212 +180,78 @@ const Login = () => {
             ? "RECUPERAR CONTRASEÑA"
             : "VERIFICAR Y RESTABLECER"}
         </h2>
-
-        {/* Inicio de sesión - Paso 1 */}
-        {mode === "login" && step === 1 && (
-          <Formik
-            initialValues={{ email: "", password: "" }}
-            validationSchema={loginSchema}
-            onSubmit={handleLogin}
-          >
-            <Form>
-              <div>
-                <label>Correo:</label>
-                <Field
-                  type="email"
-                  name="email"
-                  className="input-field"
-                  autoFocus
-                  placeholder="Ingresa tu correo"
-                />
-                <ErrorMessage name="email" component="div" className="field-error" />
-              </div>
-              <div>
-                <label>Contraseña:</label>
-                <Field
-                  type="password"
-                  name="password"
-                  className="input-field"
-                  placeholder="Ingresa tu contraseña"
-                />
-                <ErrorMessage name="password" component="div" className="field-error" />
-              </div>
-              {error && <p className="error-message">{error}</p>}
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? "Ingresando..." : "Ingresar"}
-              </button>
-              <p className="forgot-password-link">
-                ¿Olvidaste tu contraseña?{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("reset-request");
-                    setError("");
-                  }}
-                >
-                  Recuperar
-                </button>
-              </p>
-            </Form>
-          </Formik>
-        )}
-
-        {/* Inicio de sesión - MFA con TOTP */}
-        {mode === "login" && step === 2 && (
-          <Formik
-            initialValues={{ code: "" }}
-            validationSchema={mfaSchema}
-            onSubmit={handleMFA}
-          >
-            <Form>
-              <p>
-                Ingresa el código generado por tu app de autenticación (ej. Microsoft Authenticator) para{" "}
-                <strong>{email}</strong>.
-              </p>
-              <div>
-                <label>Código MFA:</label>
-                <Field
-                  type="text"
-                  name="code"
-                  className="input-field"
-                  maxLength="6"
-                  autoFocus
-                  placeholder="Ingresa el código"
-                />
-                <ErrorMessage name="code" component="div" className="field-error" />
-              </div>
-              {error && <p className="error-message">{error}</p>}
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? "Verificando..." : "Verificar"}
-              </button>
-            </Form>
-          </Formik>
-        )}
-
-        {/* Solicitud de recuperación */}
-        {mode === "reset-request" && step === 1 && (
-          <Formik
-            initialValues={{ email: "" }}
-            validationSchema={resetRequestSchema}
-            onSubmit={handleRequestReset}
-          >
-            <Form>
-              <div>
-                <label>Correo:</label>
-                <Field
-                  type="email"
-                  name="email"
-                  className="input-field"
-                  autoFocus
-                  placeholder="Ingresa tu correo"
-                />
-                <ErrorMessage name="email" component="div" className="field-error" />
-              </div>
-              {error && <p className="error-message">{error}</p>}
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? "Enviando..." : "Enviar código"}
-              </button>
-              <p className="back-to-login">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("login");
-                    setError("");
-                  }}
-                >
-                  Volver al inicio de sesión
-                </button>
-              </p>
-            </Form>
-          </Formik>
-        )}
-
-        {/* Verificación y restablecimiento */}
-        {mode === "reset-request" && step === 2 && (
-          <Formik
-            initialValues={{ code: "", newPassword: "", confirmPassword: "" }}
-            validationSchema={resetSchema}
-            onSubmit={handleResetPassword}
-          >
-            <Form>
-              <p>
-                Se envió un código de 6 dígitos a <strong>{email}</strong>. Ingresa el código y tu nueva contraseña.
-              </p>
-              <div>
-                <label>Código:</label>
-                <Field
-                  type="text"
-                  name="code"
-                  className="input-field"
-                  maxLength="6"
-                  autoFocus
-                  placeholder="Ingresa el código"
-                />
-                <ErrorMessage name="code" component="div" className="field-error" />
-              </div>
-              <div>
-                <label>Nueva contraseña:</label>
-                <Field
-                  type="password"
-                  name="newPassword"
-                  className="input-field"
-                  placeholder="Ingresa nueva contraseña"
-                />
-                <ErrorMessage name="newPassword" component="div" className="field-error" />
-              </div>
-              <div>
-                <label>Confirmar contraseña:</label>
-                <Field
-                  type="password"
-                  name="confirmPassword"
-                  className="input-field"
-                  placeholder="Confirma la contraseña"
-                />
-                <ErrorMessage name="confirmPassword" component="div" className="field-error" />
-              </div>
-              {error && <p className="error-message">{error}</p>}
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? "Restableciendo..." : "Restablecer contraseña"}
-              </button>
-              <p className="back-to-login">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep(1);
-                    setError("");
-                  }}
-                >
-                  Solicitar otro código
-                </button>
-              </p>
-            </Form>
-          </Formik>
-        )}
-
-        {/* Ícono de Código QR */}
-        <div className="qr-icon-wrapper">
-          <button
-            className="qr-icon-btn"
-            onClick={handleQRClick}
-            title="Recuperar código MFA con QR"
-          >
-            <FaQrcode />
-          </button>
-        </div>
-
-        {/* Mensaje explicativo (modal o texto simple) */}
-        {showQRInfo && (
-          <div className="qr-info">
-            <p>
-              Escanea el código QR con tu app de autenticación para recuperar tu código MFA. 
-              (Funcionalidad en desarrollo: contacta al soporte para obtener tu código QR.)
-            </p>
-            <button onClick={() => setShowQRInfo(false)} className="close-qr-info">
-              Cerrar
-            </button>
-          </div>
-        )}
-
+  
+        {/* Mostrar solo un formulario a la vez */}
+        {(() => {
+          if (mode === "login" && step === 1) {
+            return (
+              <LoginForm
+                handleLogin={handleLogin}
+                setMode={setMode}
+                setError={setError}
+                isLoading={isLoading}
+                error={error}
+                setEmail={setEmail}
+              />
+            );
+          } else if (mode === "login" && step === 2) {
+            return (
+              <MFAForm
+                handleMFA={handleMFA}
+                email={email}
+                isLoading={isLoading}
+                error={error}
+              />
+            );
+          } else if (mode === "reset-request" && step === 1) {
+            return (
+              <ResetRequestForm
+                handleRequestReset={handleRequestReset}
+                setMode={setMode}
+                setError={setError}
+                isLoading={isLoading}
+                error={error}
+                setEmail={setEmail}
+              />
+            );
+          } else if (mode === "reset-request" && step === 2) {
+            return (
+              <ResetPasswordForm
+                handleResetPassword={handleResetPassword}
+                email={email}
+                setStep={setStep}
+                setError={setError}
+                isLoading={isLoading}
+                error={error}
+              />
+            );
+          }
+          return null; // En caso de que ninguna condición se cumpla
+        })()}
+  
+        <QRIcon
+          mode={mode}
+          step={step}
+          handleQRClick={handleQRClick}
+          isLoading={isLoading}
+        />
+  
+        <TempCodeModal
+          showTempCodeForm={showTempCodeForm}
+          setShowTempCodeForm={setShowTempCodeForm}
+          email={email}
+          handleTempCodeSubmit={handleTempCodeSubmit}
+          isLoading={isLoading}
+          error={error}
+        />
+  
+        <QRCodeModal
+          showQRInfo={showQRInfo}
+          setShowQRInfo={setShowQRInfo}
+          qrCode={qrCode}
+          setQrCode={setQrCode}
+        />
+  
         {(mode === "login" || mode === "reset-request") && (
           <p className="register-link">
             ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
@@ -345,5 +261,5 @@ const Login = () => {
     </div>
   );
 };
- 
+
 export default Login;
