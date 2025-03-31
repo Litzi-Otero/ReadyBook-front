@@ -1,36 +1,89 @@
 .notification {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ffe6e6;
-    color: #d32f2f;
-    padding: 15px 20px;
-    border-radius: 5px;
-    border: 1px solid #ef9a9a;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 500px;
-    width: 90%;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .notification p {
-    margin: 0;
-    font-size: 14px;
-  }
-  
-  .close-notification-btn {
-    background: none;
-    border: none;
-    color: #d32f2f;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 5px;
-  }
-  
-  .close-notification-btn:hover {
-    color: #b71c1c;
-  }
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrado en la pantalla */
+  background-color: #ffffff; /* Fondo blanco */
+  padding: 20px;
+  border-radius: 15px; /* Bordes redondeados */
+  border: 4px solid; /* Borde con grosor fijo, color se define por tipo */
+  display: flex;
+  flex-direction: column; /* Orden vertical */
+  align-items: center; /* Centrar elementos horizontalmente */
+  gap: 15px; /* Espacio entre elementos */
+  max-width: 400px;
+  width: 90%;
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.notification-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-icon-wrapper svg {
+  font-size: 24px;
+}
+
+.notification-content {
+  text-align: center; /* Centrar el texto */
+}
+
+.notification-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-message {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.open-btn {
+  background-color: var(--text-small-color); /* Rosa para el botón */
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px; /* Bordes redondeados */
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Hacer que el botón ocupe todo el ancho */
+  max-width: 150px; /* Limitar el ancho máximo del botón */
+}
+
+.open-btn:hover {
+  background-color: var(--purple-color); /* Rosa más oscuro al pasar el mouse */
+}
+
+/* Estilos específicos por tipo */
+.notification.error {
+  border-color: var(--red-color); /* Borde rojo */
+}
+
+.notification.success {
+  border-color: var(--green-color); /* Borde verde */
+}
+
+.notification.warning {
+  border-color: var(--orange-color); /* Borde naranja */
+}
+
+/* Color del ícono según el tipo */
+.notification.error .notification-icon-wrapper svg {
+  color: #d32f2f; /* Ícono rojo */
+}
+
+.notification.success .notification-icon-wrapper svg {
+  color: #28a745; /* Ícono verde */
+}
+
+.notification.warning .notification-icon-wrapper svg {
+  color: #f0ad4e; /* Ícono naranja */
+}

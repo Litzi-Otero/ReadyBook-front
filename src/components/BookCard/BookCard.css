@@ -1,0 +1,105 @@
+/* src/components/BookCard.css */
+.book-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    max-width: 300px; /* Limita el ancho máximo de cada tarjeta */
+    margin: 0 auto; /* Centra la tarjeta dentro de su celda */
+  }
+  
+  .book-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  h4 {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #333;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+  }
+  
+  .reserved-text {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .waiting-text {
+    color: #f0ad4e;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .reservation-date,
+  .waiting-date {
+    font-size: 12px;
+    color: #777;
+    margin-top: 5px;
+  }
+  
+  .reserve-btn,
+  .cancel-btn,
+  .view-details-btn,
+  .waiting-list-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .reserve-btn {
+    background: #52c2c3;
+  }
+  
+  .reserve-btn:hover {
+    background: #42a0a1;
+  }
+  
+  .cancel-btn {
+    background: #d32f2f;
+  }
+  
+  .cancel-btn:hover {
+    background: #b71c1c;
+  }
+  
+  .view-details-btn {
+    background: #a1459d;
+  }
+  
+  .view-details-btn:hover {
+    background: #81357a;
+  }
+  
+  .waiting-list-btn {
+    background: #f0ad4e;
+  }
+  
+  .waiting-list-btn:hover {
+    background: #ec971f;
+  }
+  
+  .waiting-list-card {
+    border-left: 4px solid #f0ad4e;
+  }
+  
+  .reservation-info {
+    margin-top: 10px;
+  }

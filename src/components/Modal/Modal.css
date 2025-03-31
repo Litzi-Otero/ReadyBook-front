@@ -1,0 +1,120 @@
+/* src/components/Modal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 77px;
+  }
+  
+  .modal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .close-btn:hover {
+    color: #333;
+  }
+  
+  .modal-body {
+    padding: 0 10px;
+  }
+  
+  .modal-body input,
+  .modal-body select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px; /* Espaciado entre campos */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    background-color: #f9f9f9; /* Fondo claro */
+    box-sizing: border-box; /* Incluye padding en el ancho */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transiciones suaves */
+  }
+  
+  .modal-body input:focus,
+  .modal-body select:focus {
+    outline: none;
+    border-color: #52c2c3; /* Color de borde al enfocar, consistente con tu paleta */
+    box-shadow: 0 0 5px rgba(82, 194, 195, 0.5); /* Sombra ligera al enfocar */
+  }
+  
+  .modal-body input:disabled,
+  .modal-body select:disabled {
+    background-color: #e0e0e0; /* Fondo grisáceo cuando está deshabilitado */
+    cursor: not-allowed;
+  }
+  
+  .modal-body select {
+    appearance: none; /* Elimina el estilo por defecto del navegador */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); /* Flecha personalizada */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px; /* Espacio para la flecha */
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .primary-btn,
+  .secondary-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .primary-btn {
+    background: #52c2c3;
+    color: white;
+  }
+  
+  .primary-btn:hover {
+    background: #42a0a1;
+  }
+  
+  .secondary-btn {
+    background: #ccc;
+    color: #333;
+  }
+  
+  .secondary-btn:hover {
+    background: #b3b3b3;
+  }
