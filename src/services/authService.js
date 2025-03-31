@@ -238,3 +238,23 @@ export const cancelWaitingList = async (reservationId, userId) => {
     throw new Error(error.response?.data?.error || "Error al cancelar de la lista de espera");
   }
 };
+
+// Nuevo método para solicitar el código temporal
+export const requestMFAQRTempCode = async (email) => {
+  try {
+    const response = await api.post("/auth/request-mfa-qr-code", { email });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Error al solicitar el código temporal");
+  }
+};
+
+// Modificar generateMFAQR para incluir el código temporal
+export const generateMFAQR = async (email, tempCode) => {
+  try {
+    const response = await api.post("/auth/generate-mfa-qr", { email, tempCode });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Error al generar el código QR");
+  }
+};
