@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Notification from "../../components/Notificaciones/Notificatoin";
+import Notification from "../../components/Notificaciones/Notification";
 import BookCard from "../../components/BookCard/BookCard";
 import MainLayout from "../../layouts/MainLayout";
 import { getReservedUserBooks, getWaitingListBooks, cancelReservation, cancelWaitingList } from "../../services/authService";
