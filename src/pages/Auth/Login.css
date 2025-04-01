@@ -178,3 +178,38 @@
 .close-qr-info:hover {
   background-color: #cacfd2;
 }
+
+/* Estilo para el modal del código QR */
+.qr-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 90%;
+  width: 350px;
+}
+
+.qr-modal h3 {
+  margin: 0 0 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.qr-image {
+  max-width: 200px;
+  margin: 0 auto 15px;
+  display: block;
+}
+
+.qr-modal p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px;
+}
