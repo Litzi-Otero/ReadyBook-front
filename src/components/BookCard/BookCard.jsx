@@ -10,6 +10,7 @@ const BookCard = ({
   onSecondaryAction,
   actionLabel,
   secondaryActionLabel,
+  isSecondaryActionLoading = false, // Nueva prop para estado de carga
 }) => {
   const isExplore = type === "explore";
   const isReserved = type === "reserved";
@@ -38,8 +39,12 @@ const BookCard = ({
             <p className="reserved-text">Apartado</p>
             <p>Hasta: {status.reservedUntil}</p>
             {onSecondaryAction && secondaryActionLabel && (
-              <button className="waiting-list-btn" onClick={onSecondaryAction}>
-                {secondaryActionLabel}
+              <button
+                className="waiting-list-btn"
+                onClick={onSecondaryAction}
+                disabled={isSecondaryActionLoading} // Deshabilitar mientras procesa
+              >
+                {isSecondaryActionLoading ? "Procesando..." : secondaryActionLabel}
               </button>
             )}
           </div>
