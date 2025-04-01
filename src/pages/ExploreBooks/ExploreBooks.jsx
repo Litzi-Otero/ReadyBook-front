@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Notification from "../../components/Notificaciones/Notificatoin";
+import Notification from "../../components/Notificaciones/Notification";
+import { getReservedBooks, reserveBook, addToWaitingList, getReservedUserBooks, getWaitingListBooks, cancelReservation, } from "../../services/authService";
+import "./ExploreBooks.css";
+import MainLayout from "../../layouts/MainLayout";
 import BookCard from "../../components/BookCard/BookCard";
 import Modal from "../../components/Modal/Modal";
-import MainLayout from "../../layouts/MainLayout";
-import { getReservedBooks, reserveBook, addToWaitingList, getReservedUserBooks, getWaitingListBooks } from "../../services/authService";
-import "./ExploreBooks.css";
 
 const ExploreBooks = () => {
   const [books, setBooks] = useState([]);
@@ -12,7 +12,7 @@ const ExploreBooks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [reservedStatus, setReservedStatus] = useState({});
-  const [isLoading, setIsLoading] = useState(false); // Usado para fetchBooks y handleReserve
+  const [isLoading, setIsLoading] = useState(false);
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [bookToReserve, setBookToReserve] = useState(null);
   const [deliveryDate, setDeliveryDate] = useState("");
@@ -22,6 +22,64 @@ const ExploreBooks = () => {
   const userEmail = user.email;
   const MAX_RESERVATIONS = 3;
   const MAX_WAITING_LIST = 3;
+
+  // SSE state
+  const [eventSource, setEventSource] = useState(null);
+
+  // Inicializar SSE
+  useEffect(() => {
+    const source = new EventSource(`${process.env.REACT_APP_API_URL || "https://readybook-back.onrender.com"}/events`);
+    setEventSource(source);
+
+    source.onopen = () => console.log("SSE connection opened");
+
+    source.onmessage = (event) => {
+      const eventData = JSON.parse(event.data);
+      handleSSEUpdate(eventData);
+    };
+
+    source.onerror = () => {
+      console.error("SSE connection error");
+      setNotification("Error en la conexión en tiempo real. Intentando reconectar...");
+      source.close();
+      setTimeout(() => setEventSource(new EventSource(`${process.env.REACT_APP_API_URL}/events`)), 2000);
+    };
+
+    return () => {
+      if (source) source.close();
+    };
+  }, []);
+
+  // Manejar eventos SSE
+  const handleSSEUpdate = (eventData) => {
+    switch (eventData.event) {
+      case "newBookReservation":
+        const { title, reservedAt, reservedUntil } = eventData.data;
+        setReservedStatus((prev) => ({
+          ...prev,
+          [title]: {
+            reserved: true,
+            reservedBySelf: prev[title]?.reservedBySelf || false,
+            reservedAt: new Date(reservedAt).toLocaleDateString(),
+            reservedUntil: new Date(reservedUntil).toLocaleDateString(),
+          },
+        }));
+        setNotification(`El libro "${title}" ha sido reservado.`);
+        break;
+
+      case "reservationCancelled":
+        const { title: cancelledTitle } = eventData.data;
+        setReservedStatus((prev) => ({
+          ...prev,
+          [cancelledTitle]: { reserved: false, reservedBySelf: false },
+        }));
+        setNotification(`El libro "${cancelledTitle}" está disponible nuevamente.`);
+        break;
+
+      default:
+        console.log("Evento desconocido:", eventData.event);
+    }
+  };
 
   useEffect(() => {
     fetchBooks(searchTerm || category);
@@ -124,7 +182,7 @@ const ExploreBooks = () => {
       email: userEmail,
     };
 
-    setIsLoading(true); // Activar estado de carga
+    setIsLoading(true);
     try {
       await reserveBook(bookData);
       setShowReserveModal(false);
@@ -142,7 +200,7 @@ const ExploreBooks = () => {
     } catch (error) {
       setNotification(error.message || "Error al apartar el libro.");
     } finally {
-      setIsLoading(false); // Desactivar estado de carga
+      setIsLoading(false);
     }
   };
 
@@ -171,7 +229,6 @@ const ExploreBooks = () => {
       <div className="explore-books-container">
         <h2>Explorar Libros</h2>
         <Notification message={notification} onClose={clearNotification} />
-
         <div className="filter-container">
           <label>Buscar por Título: </label>
           <input
@@ -180,14 +237,10 @@ const ExploreBooks = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Ingresa el título del libro"
             className="search-input"
-            disabled={isLoading} // Deshabilitar mientras se carga
+            disabled={isLoading}
           />
           <label>Filtrar por Categoría: </label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            disabled={isLoading} // Deshabilitar mientras se carga
-          >
+          <select value={category} onChange={(e) => setCategory(e.target.value)} disabled={isLoading}>
             <option value="programming">Programación</option>
             <option value="fiction">Ficción</option>
             <option value="science">Ciencia</option>
@@ -250,10 +303,10 @@ const ExploreBooks = () => {
           isOpen={showReserveModal}
           onClose={() => setShowReserveModal(false)}
           primaryAction={handleReserve}
-          primaryLabel={isLoading ? "Procesando..." : "Confirmar Reserva"} // Cambiar texto según isLoading
+          primaryLabel={isLoading ? "Procesando..." : "Confirmar Reserva"}
           secondaryAction={() => setShowReserveModal(false)}
           secondaryLabel="Cancelar"
-          isLoading={isLoading} // Pasar isLoading al Modal para deshabilitar botones
+          isLoading={isLoading}
         >
           <label>
             Fecha de entrega:
@@ -263,7 +316,7 @@ const ExploreBooks = () => {
               onChange={(e) => setDeliveryDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
               className="date-input"
-              disabled={isLoading} // Deshabilitar input durante la carga
+              disabled={isLoading}
             />
           </label>
         </Modal>
