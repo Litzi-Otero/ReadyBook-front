@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Notification from "../../components/Notificaciones/Notification";
-import { getReservedBooks, reserveBook, addToWaitingList, getReservedUserBooks, getWaitingListBooks, cancelReservation, } from "../../services/authService";
+import { getReservedBooks, reserveBook, addToWaitingList, getReservedUserBooks, getWaitingListBooks } from "../../services/authService";
 import "./ExploreBooks.css";
 import MainLayout from "../../layouts/MainLayout";
 import BookCard from "../../components/BookCard/BookCard";
