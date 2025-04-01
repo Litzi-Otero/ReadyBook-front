@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Notification from "../../components/Notificaciones/Notification";
-import { getReservedBooks, reserveBook, addToWaitingList, getReservedUserBooks, getWaitingListBooks } from "../../services/authService";
+import {
+  getReservedBooks,
+  reserveBook,
+  addToWaitingList,
+  getReservedUserBooks,
+  getWaitingListBooks,
+} from "../../services/authService";
 import "./ExploreBooks.css";
 import MainLayout from "../../layouts/MainLayout";
 import BookCard from "../../components/BookCard/BookCard";
@@ -12,7 +18,8 @@ const ExploreBooks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [reservedStatus, setReservedStatus] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Para operaciones generales como fetchBooks y reserveBook
+  const [isAddingToWaitingList, setIsAddingToWaitingList] = useState({}); // Estado para cada libro en la lista de espera
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [bookToReserve, setBookToReserve] = useState(null);
   const [deliveryDate, setDeliveryDate] = useState("");
@@ -214,11 +221,14 @@ const ExploreBooks = () => {
       setNotification("Has alcanzado el límite de 3 libros en la lista de espera.");
       return;
     }
+    setIsAddingToWaitingList((prev) => ({ ...prev, [title]: true })); // Activar estado de carga para este libro
     try {
       await addToWaitingList(title, userId);
       setNotification("Te has añadido a la lista de espera exitosamente.");
     } catch (error) {
       setNotification(error.message || "Error al añadir a la lista de espera.");
+    } finally {
+      setIsAddingToWaitingList((prev) => ({ ...prev, [title]: false })); // Desactivar estado de carga
     }
   };
 
@@ -257,6 +267,7 @@ const ExploreBooks = () => {
             {books.length > 0 ? (
               books.map((book) => {
                 const status = reservedStatus[book.volumeInfo.title] || { reserved: false, reservedBySelf: false };
+                const isWaitingListProcessing = isAddingToWaitingList[book.volumeInfo.title] || false;
                 return (
                   <BookCard
                     key={book.id}
@@ -270,7 +281,14 @@ const ExploreBooks = () => {
                         ? () => handleAddToWaitingList(book.volumeInfo.title)
                         : () => setSelectedBook(book.volumeInfo)
                     }
-                    secondaryActionLabel={status.reserved ? "Agregar a Lista de Espera" : "Ver Detalles"}
+                    secondaryActionLabel={
+                      status.reserved
+                        ? isWaitingListProcessing
+                          ? "Procesando..."
+                          : "Agregar a Lista de Espera"
+                        : "Ver Detalles"
+                    }
+                    isSecondaryActionLoading={isWaitingListProcessing} // Pasar estado de carga al BookCard
                   />
                 );
               })
